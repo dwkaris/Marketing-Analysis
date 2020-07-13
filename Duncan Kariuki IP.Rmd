@@ -609,4 +609,4 @@ Following our analysis the following recommendations were made:
 
 ## EVALUATION
 
-We have been able to PROVIDE effective recommendations on how our client can increase the number of people clicking on her advertisements . Our method of these has yielded satisfying results which can be verified using a different sample but keeping the assumptions. We have gone further to conduct more analysis on our data which has complemented our recommendations.
+We have been able to provide effective recommendations on how our client can increase the number of people clicking on her advertisements . Our method of these has yielded satisfying results which can be verified using a different sample but keeping the assumptions. We have gone further to conduct more analysis on our data which has complemented our recommendations.
