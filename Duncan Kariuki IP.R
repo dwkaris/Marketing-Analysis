@@ -106,13 +106,6 @@ dim(df_new)
 
 ###Clean character columns
 
-####we remove Whitespaces and convert character columns lower case
-
-
-df_new %>%
-  
-  summarise_if(is.character, tolower) %>% trimws()
-
 
 ## Univariate Analysis
 
