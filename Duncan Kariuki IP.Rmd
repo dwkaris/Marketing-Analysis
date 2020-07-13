@@ -10,16 +10,16 @@ author: "Duncan Kariuki"
 
 Cryptography is the practice and study of techniques for secure communication in the presence of third parties called adversaries. In simpler terms it is the art of solving codes.
 
-A lady Kenyan Entrepreneur has created an online cryptography course and would want to advertise it on her blog. She currently targets audiences originating from various countries. In the past, she ran ads to advertise a related course on the same blog and collected data in the process. She would now like to employ our services as a Data Scientists Consultants to help her identify which individuals are most likely to click on her advertisements.
+A lady Kenyan Entrepreneur has created an online cryptography course and would want to advertise it on her blog. She currently targets audiences originating from various countries. In the past, she ran ads to advertise a related course on the same blog and collected data in the process. She would now like to employ our services as Data Scientists Consultants to help her identify which individuals are most likely to click on her advertisements.
 
-We will hence analyze the data provided and create a report with recommendations on how she can identify which individuals are most likely to click on her adverts.
+We will hence analyze the data provided and create a report with recommendations on how she can increase the number of people clicking on her adverts.
 
 
 ## BUSINESS UNDERSTANDING
 
 ### Business Objectives
 
-The objective of this report is to draw an understanding from the data collected from a similar audiences originating from various countries. This information will give us a view she can increase the number of people clicking on her advertisements.
+The objective of this report is to draw an understanding from the data collected from a similar audiences originating from various countries. This information will give us a view on how she can increase the number of people clicking on her advertisements.
 
 ### Business Success Creteria
 
@@ -51,27 +51,28 @@ There were no recorded constraints
 
 Our data mining goals for this project are as follows:
 
-i) Which variable largely influence if someone will click on the add?
+i) Which variable largely influence someone will clicking on the ads?
 
 ii) Which country has most people who clicked on the add?
 
-iii) What is the mean, quantile, and variance of the numerical variables of people who clicked on the add?
+iii) What is the summary of the numerical variables of people who clicked on the add  and those who did not click on the add?
 
-iV) How does Daily time spent on the site and Area income affect clicking in the advert?
+iV) How does Daily time spent on the site and Area income affect clicking in the adverts?
 
-v) How does Age and Gender affect clicking in the advert?
+v) How does Age and Gender affect clicking in the adverts?
 
-vi) How does Timestamp and Daily Internet Usage affect Clicking on the ad?
+vi) How does Timestamp and Daily Internet Usage affect Clicking on the ads?
 
 ###Data Mining Success Criteria
+
 Our success criteria will be measured by the following criteria;
--       Determining the post popular  times the cars are hired and returned
+Providing effective recommendations fromcollected insights.      
 
 ## DATA UNDERSTANDING
-In this project, we are using data collected y our client In the past, she ran ads to advertise a related course on the same blog and collected the data in the process.
+In this project, we are using data collected y our client In the past, she ran ads to advertise a related advert on the same blog and collected the data in the process.
 
 
-```{r , echo=FALSE}
+```{r  echo=FALSE}
 
 ## Install And Load Libraries
 
@@ -88,7 +89,10 @@ library(corrplot)
 ```
 
 
-The dataset loaded below was is available in the following link [http://bit.ly/IPAdvertisingData].
+The dataset loaded below was is available in the following:
+
+link [http://bit.ly/IPAdvertisingData].
+
 ```{r, echo=TRUE}
 ## Load data set 
 
@@ -138,7 +142,7 @@ Our dataset has 10 columns and 1000 rows, the Columns are described below:
  
 "Daily.Internet.Usage" - Daily Internet Usage person viewing the Website
 
-"Ad.Topic.Line"  - 
+"Ad.Topic.Line"  - Topic to which advert was advertised on
 
 "City"  - City where the person viewed the website from
 
@@ -151,7 +155,7 @@ Our dataset has 10 columns and 1000 rows, the Columns are described below:
 
 
 
-shows the datatypes of the data frame
+shows the data types of the data frame
 ```{r}
 glimpse(df)
 
@@ -262,20 +266,6 @@ dim(df_new)
 ```
 We have now removed the 8 columns and we are left with 992 rows
 
-
-d) Validity and Uniformity
-
-We make sure our dataset is uniform here. We set the case of our rows to lowercase and we strip our columns to remove white spaces if.
-
-
-```{r}
-df_new %>%
-  
-  summarise_if(is.character, tolower) %>% trimws()
-
-```
-We removed white space from our columns and rows in order to avoid syntax errors that may arise due to white spaces.
-Clean character columns
 
 
 ## ANALYSIS
@@ -502,7 +492,7 @@ ggplot(df_new) +
 ```
 Observation:
 
-Oder people click on the ads more than younger people
+Older people click on the ads more than younger people
 
 People who spend less time on on the a site are more likely to click on the add than people who spend a lot of time on the site 
 
@@ -544,7 +534,7 @@ Most people who click on the ads have a lesser Area Income
 Most people who click on the site have a lesser Area Income and Spend less Time on the Site daily
 
 
-#### Question Vi
+#### Question (Vi)
 
 How does Timestamp and Daily Internet Usage affect Clicking on the ad?
 
