@@ -1,0 +1,622 @@
+---
+
+output: pdf_document
+title: "INDEPENDENT PROJECT WEEK 12"
+author: "Duncan Kariuki"
+
+---
+
+# BACKGROUND HISTORY
+
+Cryptography is the practice and study of techniques for secure communication in the presence of third parties called adversaries. In simpler terms it is the art of solving codes.
+
+A lady Kenyan Entrepreneur has created an online cryptography course and would want to advertise it on her blog. She currently targets audiences originating from various countries. In the past, she ran ads to advertise a related course on the same blog and collected data in the process. She would now like to employ our services as a Data Scientists Consultants to help her identify which individuals are most likely to click on her advertisements.
+
+We will hence analyze the data provided and create a report with recommendations on how she can identify which individuals are most likely to click on her adverts.
+
+
+## BUSINESS UNDERSTANDING
+
+### Business Objectives
+
+The objective of this report is to draw an understanding from the data collected from a similar audiences originating from various countries. This information will give us a view she can increase the number of people clicking on her advertisements.
+
+### Business Success Creteria
+
+Our success will be achieved by providing effective recommendations on how she can increase the number of people clicking on her advertisements.
+
+### Assessing The Situation
+
+a)Resources
+
+i)Personnel
+Data Science Expert
+
+
+ii)Data Source
+[http://bit.ly/IPAdvertisingData]
+
+iii)Computing resources
+Software
+R Markdown
+Github
+
+b)Assumptions
+Data collected will be an accurate representation of the population.
+
+c) constraint
+There were no recorded constraints
+
+### Data Mining Goals
+
+Our data mining goals for this project are as follows:
+
+i) Which variable largely influence if someone will click on the add?
+
+ii) Which country has most people who clicked on the add?
+
+iii) What is the mean, quantile, and variance of the numerical variables of people who clicked on the add?
+
+iV) How does Daily time spent on the site and Area income affect clicking in the advert?
+
+v) How does Age and Gender affect clicking in the advert?
+
+vi) How does Timestamp and Daily Internet Usage affect Clicking on the ad?
+
+###Data Mining Success Criteria
+Our success criteria will be measured by the following criteria;
+-       Determining the post popular  times the cars are hired and returned
+
+## DATA UNDERSTANDING
+In this project, we are using data collected y our client In the past, she ran ads to advertise a related course on the same blog and collected the data in the process.
+
+
+```{r , echo=FALSE}
+
+## Install And Load Libraries
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(tibble)
+install.packages("pander")
+library(pander)
+install.packages("Hmisc")
+library('Hmisc')
+install.packages("corrplot")
+library(corrplot)
+```
+
+
+The dataset loaded below was is available in the following link [http://bit.ly/IPAdvertisingData].
+```{r, echo=TRUE}
+## Load data set 
+
+df <- read.csv("F:/advertising.csv")
+
+```
+
+
+```{r, echo=TRUE}
+##Preview first 6 rows of the dataset
+head(df)
+
+```
+
+
+```{r, echo=TRUE}
+#Preview the last 6 rows
+
+tail(df)
+
+```
+
+
+```{r}
+# Preview shape of dataset
+
+dim(df)
+
+```
+
+## Accessing Information about our Dataset
+
+Check Number of Columns Present
+
+```{r}
+
+colnames(df)
+
+```
+Our dataset has 10 columns and 1000 rows, the Columns are described below:
+
+"Daily.Time.Spent.on.Site" - Time spent on website with the adverts
+
+"Age"  - Age of person viewing the Website
+
+"Area.Income" - Income of person viewing the Website
+ 
+"Daily.Internet.Usage" - Daily Internet Usage person viewing the Website
+
+"Ad.Topic.Line"  - 
+
+"City"  - City where the person viewed the website from
+
+"Male" - Gender of person viewing the website
+
+"Country" - County where the person viewed the website from                
+"Timestamp"  - Date and time Website was viewed         
+ 
+"Clicked.on.Ad" - Whether the viewer clicked on the ad or not
+
+
+
+shows the datatypes of the data frame
+```{r}
+glimpse(df)
+
+```
+Our dataset has 3 integer columns
+3 double columns
+3 Character columns
+
+Check summary of our dataset
+```{r}
+summ <- data.frame(summary(df))
+pander(summ)
+
+```
+Above is the summary of our dataset
+
+
+## DATA PREPARATION
+
+Convert to dataframe to a tibble for knit output
+```{r}
+# Convert our dataset to a tibble for neat display
+
+df <- as.tibble(df)
+df
+
+```
+
+
+### Clean The Dataset
+
+a) Completeness
+
+Here we deal with missing values
+
+```{r}
+# Check for missing values
+
+colSums(is.na(df))
+```
+There are no missing values in our dataframe
+
+
+b) consistency
+
+Here we deal with duplicated values
+```{r}
+#  check for duplicated values
+
+duplicated_rows <- df[duplicated(df),]
+duplicated_rows
+
+```
+There are no duplicate rows in our dataframe
+
+
+c) Accuracy
+
+Here we drop outliers to get accurate insights
+
+
+CHECK FOR OUTLIERS 
+
+```{r}
+#Get the numerical columns
+
+df_num <- (df %>% select(c("Daily.Time.Spent.on.Site", "Area.Income", "Age", "Daily.Internet.Usage")))
+
+```
+
+
+Plot a Boxplot to check for outliers
+
+```{r Fig1, fig.height=10, fig.width= 10}
+par(mfrow=c(1,4))
+
+boxplot(df_num$Daily.Time.Spent.on.Site, xlab = "Daily.Time.Spent.on.Site")
+
+boxplot(df_num$Area.Income, xlab = "Area.Income")
+
+boxplot(df_num$Age, xlab = "Age")
+
+boxplot(df_num$Daily.Internet.Usage, xlab = "Daily.Internet.Usage")
+
+```
+Only Area.income has outliers so we will take a closer look at it
+
+
+
+```{r Fig2, fig.height=3}
+
+#A closer look at the outliers 
+
+# Check outliers in the Area.Income Column
+out <- list(boxplot.stats(df_num$Area.Income)$out)
+out
+
+```
+We have 8 outliers in these column
+
+
+Remove outliers
+
+```{r}
+df_new <- subset(df, Area.Income > 19000)
+dim(df_new)
+
+```
+We have now removed the 8 columns and we are left with 992 rows
+
+
+d) Validity and Uniformity
+
+We make sure our dataset is uniform here. We set the case of our rows to lowercase and we strip our columns to remove white spaces if.
+
+
+```{r}
+df_new %>%
+  
+  summarise_if(is.character, tolower) %>% trimws()
+
+```
+We removed white space from our columns and rows in order to avoid syntax errors that may arise due to white spaces.
+Clean character columns
+
+
+## ANALYSIS
+
+### Univariate Analysis
+
+
+What is the summary of the numerical variables of people who clicked on the add  and those who did not click on the add?
+ 
+We will start with an analysis of those who did not click on the add
+
+```{r}
+
+# We will start with an analysis of those who did not click on the add
+
+df_sum  <- subset(df_new, Clicked.on.Ad == 0)
+
+print(dim(df_sum))
+
+df_sum <-(df_sum %>%
+  summarise_if(is.numeric, summary))
+
+
+df_sum <- data.frame(df_sum)
+
+df_sum$Index <- c('Min', '1st QUN', 'Median','Mean', '3rd QUN', 'Max' )
+rownames(df_sum) <- df_sum$Index
+
+
+df_sum %>% select(- c('Index', 'Male', 'Clicked.on.Ad'))
+  
+```
+Observation:
+
+From the summary of the who did not click on the website we 
+can see that that the mean Daily.Time.Spent.on.Site is 76, Mean age of people visiting the site is 32, Mean Daily internet Usage is 215 and Mean Area Income is 61386.
+
+
+```{r}
+# Check for variance of the numerical columns for the whole dataset 
+
+df_sum %>%
+  
+  summarise_if( is.numeric, var) 
+  
+```
+```{r}
+# Check for variance of the numerical columns for the whole dataset
+
+df_sum %>%
+  
+  summarise_if( is.numeric, sd) 
+  
+```
+
+Summary for people who clicked on the add
+
+```{r}
+df_click <- subset(df_new, Clicked.on.Ad == 1)
+print(dim(df_click))
+
+df_sum_click <-(df_click %>%
+  summarise_if(is.numeric, summary))
+
+df_sum_click <- data.frame(df_sum_click)
+
+df_sum_click$Index <- c('Min', '1st QUN', 'Median','Mean', '3rd QUN', 'Max' )
+rownames(df_sum_click) <- df_sum_click$Index
+
+
+df_sum_click %>% select(- c('Index', 'Male', 'Clicked.on.Ad'))
+```
+From the summary of the mean of people who clicked on the ad we can see that that the mean Daily.Time.Spent.on.Site reduces 76 to 53, Mean age of people visiting the site is increases from 32 to 40 , Mean Daily internet Usage reduces to 145 from 215 and Mean Area Income is reduces to 49141 from 61386.
+
+Variance for people who clicked on the add
+```{r}
+
+df_sum_click %>%
+  
+  summarise_if( is.numeric, var) 
+  
+
+```
+
+
+
+plot histogram to check distribution on numerical values
+
+```{r Fig1, fig.height=10, fig.width= 10}
+
+par(mfrow=c(4,1))
+
+h <- hist(df_new$Daily.Time.Spent.on.Site, main="Daily.Time.Spent.on.Site", col = 'black')
+xfit <- seq(min(df_new$Daily.Time.Spent.on.Site),max(df_new$Daily.Time.Spent.on.Site),length=40)
+yfit<-dnorm(xfit,mean=mean(df_new$Daily.Time.Spent.on.Site),sd=sd(df_new$Daily.Time.Spent.on.Site))
+yfit <- yfit*diff(h$mids[1:2])*length(df_new$Daily.Time.Spent.on.Site)
+lines(xfit, yfit, col="blue", lwd=2)
+
+h <- hist(df_new$Age, main="AGE DISTIBUTION", col = 'red')
+xfit <- seq(min(df_new$Age),max(df_new$Age),length=40)
+yfit<-dnorm(xfit,mean=mean(df_new$Age),sd=sd(df_new$Age))
+yfit <- yfit*diff(h$mids[1:2])*length(df_new$Age)
+lines(xfit, yfit, col="blue", lwd=2)
+
+h <- hist(df_new$Area.Income, main="Area.Income Distribution", col = 'green')
+xfit <- seq(min(df_new$Area.Income),max(df_new$Area.Income),length=40)
+yfit<-dnorm(xfit,mean=mean(df_new$Area.Income),sd=sd(df_new$Area.Income))
+yfit <- yfit*diff(h$mids[1:2])*length(df_new$Area.Income)
+lines(xfit, yfit, col="blue", lwd=2)
+
+h <- hist(df_new$Daily.Internet.Usage, main="Daily.Internet.Usage Distibution", col = 'blue')
+xfit <- seq(min(df_new$Daily.Internet.Usage),max(df_new$Daily.Internet.Usage),length=40)
+yfit<-dnorm(xfit,mean=mean(df_new$Daily.Internet.Usage),sd=sd(df_new$Daily.Internet.Usage))
+yfit <- yfit*diff(h$mids[1:2])*length(df_new$Daily.Internet.Usage)
+lines(xfit, yfit, col="black", lwd=2)
+
+```
+Most numerical columns follow a normal distribution distributed about the mean
+
+
+
+
+```{r, fig.height= 5, fig.width= 10}
+
+# Count our clicks
+
+ggplot(df_new) + geom_bar(aes(x = Clicked.on.Ad),fill = 'orange')
+
+```
+About 500 people did not click on the advert and 492 people clicked on the advert
+
+
+#### Question II
+
+Which country has most people who clicked on the add?
+
+
+
+```{r}
+#Frequency  of countries that participated in the study
+
+df_grouped <- data.frame(table(df_new$Country))
+sorted_by_county <- df_grouped[order(-df_grouped$Freq),][1:10,]
+sorted_by_county
+
+# Plot
+
+ggplot(sorted_by_county, aes(x= Freq , y=Var1)) +
+  geom_bar(stat="identity", fill="steelblue")+
+  geom_text(aes(label=Freq), vjust=-0.3, size=3.5)+
+  theme_minimal()
+   
+```
+Observation:
+
+Greece and France had the most people included in the study at 9. 
+
+
+```{r}
+
+# Frequency  of countries from which people clicked on the add
+
+df_grouped_click <- data.frame(table(df_click$Country))
+sorted_by_county <- df_grouped_click[order(-df_grouped_click$Freq),][1:10,]
+sorted_by_county
+
+# Plot
+
+ggplot(sorted_by_county, aes(x= Freq , y=Var1)) +
+  geom_bar(stat="identity", fill="purple")+
+  geom_text(aes(label=Freq), vjust=-0.3, size=3.5)+
+  theme_minimal()
+ 
+```
+Observation:
+
+Ethiopia and Australia had the most people who clicked on the ad at 7.
+
+
+```{r}
+# Frequency  of countries from which people did not click on the add
+
+df_sum  <- subset(df_new, Clicked.on.Ad == 0)
+df_grouped_not_click <- data.frame(table(df_sum$Country))
+sorted_by_county <- df_grouped_not_click[order(-df_grouped_not_click$Freq),][1:10,]
+sorted_by_county
+
+# Plot
+
+ggplot(sorted_by_county, aes(x= Freq , y=Var1)) +
+  geom_bar(stat="identity", fill="pink")+
+  geom_text(aes(label=Freq), vjust=-0.3, size=3.5)+
+  theme_minimal()
+ 
+```
+Observation:
+
+From the output above Croatia , Gabon and Bolivia had the Largest number of people who did not click on the ads.
+
+
+
+### Bivariate Anlysis
+
+ 
+Group mean numerical columns by click on the click
+
+```{r}
+
+df_new %>%
+  group_by(Clicked.on.Ad) %>%
+  summarise_if(is.numeric ,mean)
+
+```
+
+#### Question III
+
+How does Daily time spent on the site and Age affect clicking in the advert?
+
+```{r}
+
+ggplot(df_new) +
+  geom_point(aes(x = Age, y= Daily.Time.Spent.on.Site ,color = Clicked.on.Ad)) 
+
+```
+Observation:
+
+Oder people click on the ads more than younger people
+
+People who spend less time on on the a site are more likely to click on the add than people who spend a lot of time on the site 
+
+Most people on the ads spend less time on the site and are old.
+
+
+#### Question (v)
+
+How does Age and Gender affect clicking in the advert?
+
+```{r}
+
+ggplot(df_new) +
+  geom_point(aes(x = Male, y= Daily.Internet.Usage ,color = Clicked.on.Ad))
+
+```
+Observation:
+
+More Male click on the ads than female
+Most people who click on the ads spend less on Internet Daily
+
+
+
+#### Question (IV)
+
+How does Daily time spent on the site and Area income affect clicking in the advert?
+
+
+```{r}
+
+ggplot(df_new) +
+  geom_point(aes(x = Area.Income, y= Daily.Time.Spent.on.Site ,color = Clicked.on.Ad)) 
+
+```
+Observation:
+
+Most people who click on the ads have a lesser Area Income
+
+Most people who click on the site have a lesser Area Income and Spend less Time on the Site daily
+
+
+#### Question Vi
+
+How does Timestamp and Daily Internet Usage affect Clicking on the ad?
+
+```{r}
+
+ggplot(df_new) +
+  geom_point(aes(x = Timestamp , y= Daily.Internet.Usage ,color = Clicked.on.Ad))
+```
+Observation:
+
+Clicks are distributed evenly though the provided time period
+
+
+#### Question I
+
+Which variable largely influences if someone will click on the add?
+
+Correlation Matrix
+
+find correlation between columns
+```{r}
+#use Hmisc package
+
+df_num <- data.frame(select_if(df_new, is.numeric) )
+
+res <- rcorr(as.matrix(df_num))
+corr <- data.frame(res$r)
+corr
+# get relationship between Clicking on add and other variables
+
+
+
+```
+
+Create a correlation plot
+
+```{r, fig.height=10, fig.width= 10}
+
+corrplot(res$r, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+```
+
+```{r}
+corrplot(res$r, type = "lower", order = "hclust", 
+         tl.col = "black", tl.srt = 90)
+```
+
+
+Get covariance between variables
+
+```{r}
+covv <- data.frame(cov(df_num))
+covv
+```
+
+Observation:
+
+From the output above, Age is the variable that largely influences if someone will click on the ad or not, it has a positive moderate correlation of 0.492. 
+
+
+## RECOMMENDATIONS
+
+Following our analysis the following recommendations were made:
+
+1.The ads should be tailored to be more attractive to the female gender eg should be created using pink colors.
+
+2. The the ads should be tailored to be more attractive to the younger people eg should be include animations in there display
+
+3. The the ads should be tailored to capture attention of people who earn higher salaries, as they spend more time on the internet due to their ability spend more on internet.
+
+4. The above recommendations should be stressed more in counties such as Croatia , Gabon and Bolivia as they have the lowest advertisement clicks.
+
+## EVALUATION
+
+We have been able to PROVIDE effective recommendations on how our client can increase the number of people clicking on her advertisements . Our method of these has yielded satisfying results which can be verified using a different sample but keeping the assumptions. We have gone further to conduct more analysis on our data which has complemented our recommendations.
