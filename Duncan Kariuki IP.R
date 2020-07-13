@@ -104,7 +104,7 @@ df_new <- subset(df, Area.Income > 19000)
 dim(df_new)
 
 
-###Clean character columns
+
 
 
 ## Univariate Analysis
@@ -121,6 +121,7 @@ rownames(df_sum) <- df_sum$Index
 
 
 df_sum %>% select(- c('Index', 'Male', 'Clicked.on.Ad'))
+
 
 
 
@@ -186,7 +187,35 @@ ggplot(sorted_by_county, aes(x= Freq , y=Var1)) +
   theme_minimal()
 
 
-## Bivariate Anlysis
+# Frequency  of countries from which people clicked on the add
+
+df_grouped_click <- data.frame(table(df_click$Country))
+sorted_by_county <- df_grouped_click[order(-df_grouped_click$Freq),][1:10,]
+sorted_by_county
+
+ggplot(sorted_by_county, aes(x= Freq , y=Var1)) +
+  geom_bar(stat="identity", fill="purple")+
+  geom_text(aes(label=Freq), vjust=-0.3, size=3.5)+
+  theme_minimal()
+
+
+# Frequency  of countries from which people did not click on the add
+
+df_sum  <- subset(df_new, Clicked.on.Ad == 0)
+df_grouped_not_click <- data.frame(table(df_sum$Country))
+sorted_by_county <- df_grouped_not_click[order(-df_grouped_not_click$Freq),][1:10,]
+sorted_by_county
+
+ggplot(sorted_by_county, aes(x= Freq , y=Var1)) +
+  geom_bar(stat="identity", fill="pink")+
+  geom_text(aes(label=Freq), vjust=-0.3, size=3.5)+
+  theme_minimal()
+
+
+
+
+
+## Bivariate Analysis
 
 
 ###Group mean numerical columns by click on the click
@@ -223,6 +252,7 @@ ggplot(df_new) +
 
 ggplot(df_new) +
   geom_point(aes(x = Timestamp , y= Daily.Internet.Usage ,color = Clicked.on.Ad))
+
 
 ###Correlation Matrix
 
